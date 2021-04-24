@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 //Components
 import '../levels.dart';
+import 'question.dart';
 
 class LevelPreview extends StatefulWidget {
   final Level level;
@@ -154,36 +155,47 @@ class _LevelPreviewState extends State<LevelPreview> {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 80),
-                    constraints: BoxConstraints(maxWidth: 230),
-                    width: double.infinity,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(92, 188, 194, 1),
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Question(
+                                  level: level,
+                                )),
+                      );
+                    },
                     child: Container(
-                      margin: const EdgeInsets.only(left: 35, right: 20),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.gamepad,
-                            size: 40,
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                "Play",
-                                style: new TextStyle(
-                                    fontFamily: "IndieFlower",
-                                    fontSize: 40,
-                                    color: Colors.white),
-                              ),
+                      margin: const EdgeInsets.only(bottom: 80),
+                      constraints: BoxConstraints(maxWidth: 230),
+                      width: double.infinity,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(92, 188, 194, 1),
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 35, right: 20),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.gamepad,
+                              size: 40,
                             ),
-                          )
-                        ],
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  "Play",
+                                  style: new TextStyle(
+                                      fontFamily: "IndieFlower",
+                                      fontSize: 40,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
