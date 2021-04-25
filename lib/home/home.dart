@@ -84,16 +84,6 @@ class _LevelsState extends State<Levels> {
     super.initState();
   }
 
-  void resetProgress() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setStringList('levels', ["true", "false", "false", "false"]);
-    prefs.setStringList('scores', ["0", "0", "0", "0"]);
-    prefs.setStringList('starts', ["0", "0", "0", "0"]);
-
-    updateProgress();
-  }
-
   void updateProgress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -125,304 +115,319 @@ class _LevelsState extends State<Levels> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 252, 223, 1),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Image.asset('assets/logo.png', scale: 1.3),
-                        Container(
-                          margin: const EdgeInsets.only(left: 10),
-                          child: Text("Levels",
-                              style: new TextStyle(
-                                  fontFamily: 'IndieFlower', fontSize: 35)),
-                        ),
-                        Expanded(child: Container()),
-                        Container(
-                          margin: const EdgeInsets.only(right: 20),
-                          child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  resetProgress();
-                                });
-                              },
-                              child: Icon(Icons.restart_alt, size: 40)),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(right: 2),
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Victories()),
-                                );
-                              },
-                              child: Icon(Icons.emoji_events_outlined,
-                                  size: tutorial! ? 55 : 40)),
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Stack(children: [
-                        Column(
-                          children: List.generate(levels.length, (index) {
-                            if (index != levels.length - 1) {
-                              return CustomPaint(
-                                painter: LevelPath(
-                                    level: levels[index],
-                                    levelPosition: levelPositions[index],
-                                    nextPosition: levelPositions[index + 1],
-                                    valueSet: false,
-                                    unlockStatus: index == levels.length
-                                        ? "last"
-                                        : unlockState[index + 1],
-                                    startOffset: [Offset(0, 0), Offset(0, 0)]),
-                                child: Container(),
-                              );
-                            } else
-                              return Container();
-                          }),
-                        ),
-                        Column(
-                          children: List.generate(levels.length, (index) {
-                            return Container(
-                              alignment: index.isOdd
-                                  ? Alignment.topRight
-                                  : Alignment.topLeft,
-                              margin: index.isOdd
-                                  ? EdgeInsets.only(right: 20)
-                                  : null,
-                              padding: const EdgeInsets.all(63),
-                              child: Container(
-                                key: levels[index].globalKey,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (unlockState[index] == "false") {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Oopsies! Unlock level ' +
-                                                      (index).toString() +
-                                                      ' first!')));
-                                    } else {
-                                      Navigator.of(context)
-                                          .push(ScaleRoute(
-                                        page: LevelPreview(
-                                          level: levels[index],
-                                          levelIndex: index,
-                                        ),
-                                        settings:
-                                            RouteSettings(name: 'LevelScreen'),
-                                      ))
-                                          .then((value) {
-                                        updateProgress();
-                                        setState(() {});
-                                      });
-                                    }
-                                  },
-                                  child: LevelCircle(
-                                    level: index + 1,
-                                    background: unlockState[index] == "true"
-                                        ? levels[index].background
-                                        : Color.fromRGBO(223, 223, 223, 1),
-                                    foreground: unlockState[index] == "true"
-                                        ? levels[index].foreground
-                                        : Color.fromRGBO(114, 114, 114, 1),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 40),
-                          child: Column(
-                            children: List.generate(levels.length, (index) {
-                              if (index == levels.length - 1) {
-                                return Container();
-                              } else {
-                                return Container(
-                                  alignment: index.isEven
-                                      ? Alignment.topRight
-                                      : Alignment.topLeft,
-                                  margin: index.isEven
-                                      ? EdgeInsets.only(right: 40, bottom: 10)
-                                      : EdgeInsets.only(top: 20),
-                                  padding: const EdgeInsets.all(80),
-                                  child: Container(
-                                    key: index == 0 ? learnerTrophy : null,
-                                    child: GestureDetector(
-                                        onTap: () {
-                                          print("trophy");
-                                        },
-                                        child: Transform.rotate(
-                                          angle: -19.4,
-                                          child: ColorFiltered(
-                                            colorFilter:
-                                                unlockState[index + 1] == "true"
-                                                    ? ColorFilter.mode(
-                                                        Colors.transparent,
-                                                        BlendMode.multiply,
-                                                      )
-                                                    : colorFilter,
-                                            child: SvgPicture.asset(
-                                                'assets/' +
-                                                    levels[index].trophy,
-                                                width: 56,
-                                                semanticsLabel: 'Trophie'),
-                                          ),
-                                        )),
-                                  ),
-                                );
-                              }
-                            }),
+    return new WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: Color.fromRGBO(255, 252, 223, 1),
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Image.asset('assets/logo.png', scale: 1.3),
+                          Container(
+                            margin: const EdgeInsets.only(left: 10),
+                            child: Text("Levels",
+                                style: new TextStyle(
+                                    fontFamily: 'IndieFlower', fontSize: 35)),
                           ),
-                        ),
-                      ]),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          if (tutorial!)
-            ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                  Color.fromRGBO(104, 104, 104, 20), BlendMode.srcOut),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        backgroundBlendMode: BlendMode.dstOut),
-                  ),
-                  Positioned(
-                    top: currentTutorial == 0
-                        ? levelPositions[0][1] - 70
-                        : currentTutorial == 1
-                            ? learnerPositions[1] - 88
-                            : currentTutorial == 2
-                                ? -50.0
-                                : 0.0,
-                    left: currentTutorial == 0
-                        ? levelPositions[0][0]
-                        : currentTutorial == 1
-                            ? learnerPositions[0] - 23
-                            : currentTutorial == 2
-                                ? null
-                                : 0.0,
-                    right: currentTutorial == 2 ? 0.0 : null,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 80),
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(100),
-                        boxShadow: [
-                          BoxShadow(
-                            spreadRadius: 7,
-                            color: Colors.red,
-                            blurRadius: 10,
+                          Expanded(child: Container()),
+                          Container(
+                            margin: const EdgeInsets.only(right: 2),
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .push(ScaleRoute(
+                                    page: Victories(),
+                                    settings: RouteSettings(name: 'Victories'),
+                                  ))
+                                      .then((value) {
+                                    updateProgress();
+                                    setState(() {});
+                                  });
+                                },
+                                child: Icon(Icons.emoji_events_outlined,
+                                    size: tutorial! ? 55 : 40)),
                           )
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          if (tutorial!)
-            Positioned(
-              top: currentTutorial == 0
-                  ? levelPositions[0][1] + 130
-                  : currentTutorial == 1
-                      ? learnerPositions[1] + 130
-                      : currentTutorial == 2
-                          ? 175
-                          : 200,
-              left: currentTutorial == 0
-                  ? levelPositions[0][0]
-                  : currentTutorial == 1
-                      ? learnerPositions[0] - 150
-                      : currentTutorial == 2
-                          ? 110
-                          : 10,
-              child: Container(
-                width: currentTutorial == 0 ? 240 : 280,
-                child: Text(
-                  tutorials[currentTutorial],
-                  style: new TextStyle(
-                      fontFamily: 'IndieFlower',
-                      fontSize: 37,
-                      color: Colors.white),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: BouncingScrollPhysics(),
+                        child: Stack(children: [
+                          Column(
+                            children: List.generate(levels.length, (index) {
+                              if (index != levels.length - 1) {
+                                return CustomPaint(
+                                  painter: LevelPath(
+                                      level: levels[index],
+                                      levelPosition: levelPositions[index],
+                                      nextPosition: levelPositions[index + 1],
+                                      valueSet: false,
+                                      unlockStatus: index == levels.length
+                                          ? "last"
+                                          : unlockState[index + 1],
+                                      startOffset: [
+                                        Offset(0, 0),
+                                        Offset(0, 0)
+                                      ]),
+                                  child: Container(),
+                                );
+                              } else
+                                return Container();
+                            }),
+                          ),
+                          Column(
+                            children: List.generate(levels.length, (index) {
+                              return Container(
+                                alignment: index.isOdd
+                                    ? Alignment.topRight
+                                    : Alignment.topLeft,
+                                margin: index.isOdd
+                                    ? EdgeInsets.only(right: 20)
+                                    : null,
+                                padding: const EdgeInsets.all(63),
+                                child: Container(
+                                  key: levels[index].globalKey,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (unlockState[index] == "false") {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    'Oopsies! Unlock level ' +
+                                                        (index).toString() +
+                                                        ' first!')));
+                                      } else {
+                                        Navigator.of(context)
+                                            .push(ScaleRoute(
+                                          page: LevelPreview(
+                                            level: levels[index],
+                                            levelIndex: index,
+                                          ),
+                                          settings: RouteSettings(
+                                              name: 'LevelScreen'),
+                                        ))
+                                            .then((value) {
+                                          updateProgress();
+                                          setState(() {});
+                                        });
+                                      }
+                                    },
+                                    child: LevelCircle(
+                                      level: index + 1,
+                                      background: unlockState[index] == "true"
+                                          ? levels[index].background
+                                          : Color.fromRGBO(223, 223, 223, 1),
+                                      foreground: unlockState[index] == "true"
+                                          ? levels[index].foreground
+                                          : Color.fromRGBO(114, 114, 114, 1),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 40),
+                            child: Column(
+                              children: List.generate(levels.length, (index) {
+                                if (index == levels.length - 1) {
+                                  return Container();
+                                } else {
+                                  return Container(
+                                    alignment: index.isEven
+                                        ? Alignment.topRight
+                                        : Alignment.topLeft,
+                                    margin: index.isEven
+                                        ? EdgeInsets.only(right: 40, bottom: 10)
+                                        : EdgeInsets.only(top: 20),
+                                    padding: const EdgeInsets.all(80),
+                                    child: Container(
+                                      key: index == 0 ? learnerTrophy : null,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            print("trophy");
+                                          },
+                                          child: Transform.rotate(
+                                            angle: -19.4,
+                                            child: ColorFiltered(
+                                              colorFilter:
+                                                  unlockState[index + 1] ==
+                                                          "true"
+                                                      ? ColorFilter.mode(
+                                                          Colors.transparent,
+                                                          BlendMode.multiply,
+                                                        )
+                                                      : colorFilter,
+                                              child: SvgPicture.asset(
+                                                  'assets/' +
+                                                      levels[index].trophy,
+                                                  width: 56,
+                                                  semanticsLabel: 'Trophie'),
+                                            ),
+                                          )),
+                                    ),
+                                  );
+                                }
+                              }),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
-          if (tutorial!)
-            Positioned(
+            if (tutorial!)
+              ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                    Color.fromRGBO(104, 104, 104, 20), BlendMode.srcOut),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          backgroundBlendMode: BlendMode.dstOut),
+                    ),
+                    Positioned(
+                      top: currentTutorial == 0
+                          ? levelPositions[0][1] - 70
+                          : currentTutorial == 1
+                              ? learnerPositions[1] - 88
+                              : currentTutorial == 2
+                                  ? -50.0
+                                  : 0.0,
+                      left: currentTutorial == 0
+                          ? levelPositions[0][0]
+                          : currentTutorial == 1
+                              ? learnerPositions[0] - 23
+                              : currentTutorial == 2
+                                  ? null
+                                  : 0.0,
+                      right: currentTutorial == 2 ? 0.0 : null,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 80),
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(100),
+                          boxShadow: [
+                            BoxShadow(
+                              spreadRadius: 7,
+                              color: Colors.red,
+                              blurRadius: 10,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (tutorial!)
+              Positioned(
                 top: currentTutorial == 0
-                    ? levelPositions[0][1] + 230
+                    ? levelPositions[0][1] + 130
                     : currentTutorial == 1
-                        ? learnerPositions[1] + 230
+                        ? learnerPositions[1] + 130
                         : currentTutorial == 2
-                            ? 170
-                            : 10,
+                            ? 175
+                            : 200,
                 left: currentTutorial == 0
-                    ? levelPositions[0][0] + 200
+                    ? levelPositions[0][0]
                     : currentTutorial == 1
-                        ? learnerPositions[0] + 50
+                        ? learnerPositions[0] - 150
                         : currentTutorial == 2
-                            ? null
-                            : 20,
-                right: currentTutorial == 2 ? 20 : null,
-                child: GestureDetector(
-                  onTap: () {
-                    if (currentTutorial == 2) {
-                      setState(() {
-                        tutorial = false;
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Question(
-                                  tutorial: true,
-                                  level: levels[0],
-                                  levelIndex: 0,
-                                )),
-                      );
-                    } else {
-                      setState(() {
-                        currentTutorial++;
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                        color: Color.fromRGBO(126, 200, 124, 1),
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: Center(
-                        child: Text(
-                      "✔",
-                      style: new TextStyle(color: Colors.white, fontSize: 30),
-                    )),
+                            ? 110
+                            : 10,
+                child: Container(
+                  width: currentTutorial == 0 ? 240 : 280,
+                  child: Text(
+                    tutorials[currentTutorial],
+                    style: new TextStyle(
+                        fontFamily: 'IndieFlower',
+                        fontSize: 37,
+                        color: Colors.white),
                   ),
-                ))
-        ],
+                ),
+              ),
+            if (tutorial!)
+              Positioned(
+                  top: currentTutorial == 0
+                      ? levelPositions[0][1] + 230
+                      : currentTutorial == 1
+                          ? learnerPositions[1] + 230
+                          : currentTutorial == 2
+                              ? 170
+                              : 10,
+                  left: currentTutorial == 0
+                      ? levelPositions[0][0] + 200
+                      : currentTutorial == 1
+                          ? learnerPositions[0] + 50
+                          : currentTutorial == 2
+                              ? null
+                              : 20,
+                  right: currentTutorial == 2 ? 20 : null,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (currentTutorial == 2) {
+                        setState(() {
+                          tutorial = false;
+                        });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Question(
+                                    tutorial: true,
+                                    level: levels[0],
+                                    levelIndex: 0,
+                                  )),
+                        );
+                      } else {
+                        setState(() {
+                          currentTutorial++;
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(126, 200, 124, 1),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      child: Center(
+                          child: Text(
+                        "✔",
+                        style: new TextStyle(color: Colors.white, fontSize: 30),
+                      )),
+                    ),
+                  )),
+            if (tutorial!)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 350,
+                  width: double.infinity,
+                  child: Image.asset(
+                    'assets/bird-616803.png',
+                    fit: BoxFit.fitHeight,
+                    alignment: Alignment.bottomCenter,
+                  ),
+                  transform: Matrix4.translationValues(30, 30.0, 0.0),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

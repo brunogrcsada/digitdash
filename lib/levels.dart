@@ -7,7 +7,7 @@ class Level {
   List curve;
 
   int time;
-  int targetScore;
+  int maxScore;
   int targetQuestions;
   int questionNumber;
 
@@ -20,7 +20,7 @@ class Level {
       this.globalKey,
       this.curve,
       this.time,
-      this.targetScore,
+      this.maxScore,
       this.targetQuestions,
       this.questionNumber,
       this.trophy,

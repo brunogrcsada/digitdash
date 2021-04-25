@@ -169,9 +169,8 @@ class _StartPageState extends State<StartPage> {
                   child: Container(
                     height: double.infinity,
                     width: double.infinity,
-                    child: SvgPicture.asset(
-                      'assets/bird-616803.svg',
-                      semanticsLabel: 'Bird',
+                    child: Image.asset(
+                      'assets/bird-616803.png',
                       fit: BoxFit.fitHeight,
                       alignment: Alignment.bottomCenter,
                     ),

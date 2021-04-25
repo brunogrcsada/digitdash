@@ -34,6 +34,7 @@ dependencies:
   vibration: ^1.7.4-nullsafety.0
   shared_preferences: ^2.0.5
   audioplayers: ^0.18.3
+  decorated_icon: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,7 @@ flutter:
     - assets/unlocked.mp3
     - assets/welldone.mp3
     - assets/oopsies.mp3
+    - assets/bird-616803.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

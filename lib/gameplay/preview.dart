@@ -1,11 +1,13 @@
 //Packages
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Components
 import '../levels.dart';
 import 'question.dart';
 import '../extensions/darkenColor.dart';
+import '../extensions/stars.dart';
 
 class LevelPreview extends StatefulWidget {
   final Level level;
@@ -22,8 +24,22 @@ class LevelPreview extends StatefulWidget {
 class _LevelPreviewState extends State<LevelPreview> {
   final Level? level;
   final int levelIndex;
+  List<String>? starState;
 
   _LevelPreviewState({this.level, required this.levelIndex});
+
+  void getStars() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      starState = prefs.getStringList('stars');
+    });
+  }
+
+  @override
+  void initState() {
+    getStars();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +78,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                     margin: const EdgeInsets.only(right: 80),
                     child: Center(
                       child: Text(
-                        "Level " + levelIndex.toString(),
+                        "Level " + (levelIndex + 1).toString(),
                         style: new TextStyle(
                             fontFamily: 'Mansalva',
                             fontSize: 60,
@@ -72,29 +88,12 @@ class _LevelPreviewState extends State<LevelPreview> {
                   ),
                 ]),
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 80),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.star,
-                      size: 60,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.star,
-                      size: 60,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.star,
-                      size: 60,
-                      color: Colors.yellow,
-                    )
-                  ],
-                ),
-              ),
+              if (starState != null)
+                Container(
+                    margin: const EdgeInsets.only(top: 60),
+                    child: Stars(
+                      starNumber: int.parse(starState![levelIndex]),
+                    )),
               Expanded(
                 child: Container(
                   child: Column(
@@ -103,7 +102,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                     children: [
                       Container(
                         constraints: BoxConstraints(maxWidth: 280),
-                        margin: const EdgeInsets.only(top: 10, bottom: 40),
+                        margin: const EdgeInsets.only(top: 0, bottom: 40),
                         width: double.infinity,
                         height: 90,
                         decoration: BoxDecoration(
