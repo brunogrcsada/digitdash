@@ -5,19 +5,25 @@ import 'package:flutter_svg/flutter_svg.dart';
 //Components
 import '../levels.dart';
 import 'question.dart';
+import '../extensions/darkenColor.dart';
 
 class LevelPreview extends StatefulWidget {
   final Level level;
+  final int levelIndex;
 
-  LevelPreview({Key? key, required this.level}) : super(key: key);
+  LevelPreview({Key? key, required this.level, required this.levelIndex})
+      : super(key: key);
 
   @override
-  _LevelPreviewState createState() => _LevelPreviewState(level: this.level);
+  _LevelPreviewState createState() =>
+      _LevelPreviewState(level: this.level, levelIndex: this.levelIndex);
 }
 
 class _LevelPreviewState extends State<LevelPreview> {
   final Level? level;
-  _LevelPreviewState({this.level});
+  final int levelIndex;
+
+  _LevelPreviewState({this.level, required this.levelIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,7 @@ class _LevelPreviewState extends State<LevelPreview> {
             right: 100.0,
             left: -280.0,
             child: SvgPicture.asset("assets/tree-2750366.svg",
-                color: Color.fromRGBO(77, 186, 193, 1)),
+                color: darkenColor(level!.background, 1.0, 30)),
           ),
           Column(
             children: [
@@ -43,116 +49,141 @@ class _LevelPreviewState extends State<LevelPreview> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                      size: 40,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 50),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.black,
+                        size: 40,
+                      ),
                     ),
                   ),
-                  Text(
-                    "Level 1",
-                    style: new TextStyle(fontFamily: 'Mansalva', fontSize: 60),
+                  Container(
+                    margin: const EdgeInsets.only(right: 80),
+                    child: Center(
+                      child: Text(
+                        "Level 1",
+                        style: new TextStyle(
+                            fontFamily: 'Mansalva',
+                            fontSize: 60,
+                            color: darkenColor(level!.foreground, 1.0, 60)),
+                      ),
+                    ),
                   ),
                 ]),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 45),
+                margin: const EdgeInsets.only(top: 80),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.star,
-                      size: 50,
+                      size: 60,
                       color: Colors.yellow,
                     ),
                     Icon(
                       Icons.star,
-                      size: 50,
+                      size: 60,
                       color: Colors.yellow,
                     ),
                     Icon(
                       Icons.star,
-                      size: 50,
+                      size: 60,
                       color: Colors.yellow,
                     )
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 250),
-                    margin: const EdgeInsets.only(top: 40, bottom: 40),
-                    width: double.infinity,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: level?.background,
-                      shape: BoxShape.rectangle,
-                      border: Border.all(
-                          color: Color.fromRGBO(3, 161, 171, 1), width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 20, right: 20),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.timer,
-                            size: 40,
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                "No Limit",
-                                style: new TextStyle(
-                                    fontFamily: "Mansalva",
-                                    fontSize: 35,
-                                    color: Color.fromRGBO(66, 110, 119, 1)),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 230),
-                    margin: const EdgeInsets.only(top: 0, bottom: 40),
-                    width: double.infinity,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: level?.background,
-                      shape: BoxShape.rectangle,
-                      border: Border.all(
-                          color: Color.fromRGBO(3, 161, 171, 1), width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.only(left: 20, right: 20),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.arrow_circle_up_rounded,
-                            size: 40,
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                "9/10",
-                                style: new TextStyle(
-                                    fontFamily: "Mansalva",
-                                    fontSize: 35,
-                                    color: Color.fromRGBO(66, 110, 119, 1)),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               Expanded(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        constraints: BoxConstraints(maxWidth: 280),
+                        margin: const EdgeInsets.only(top: 10, bottom: 40),
+                        width: double.infinity,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: level?.background,
+                          shape: BoxShape.rectangle,
+                          border: Border.all(
+                              color: darkenColor(level!.foreground, 1.0, 60),
+                              width: 2),
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.only(left: 20, right: 20),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/9031120521537856843.svg',
+                                semanticsLabel: 'Logo',
+                                width: 50,
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    level!.time == 0
+                                        ? "No Limit"
+                                        : level!.time.toString() + " seconds",
+                                    style: new TextStyle(
+                                        fontFamily: "Mansalva",
+                                        fontSize: 35,
+                                        color: darkenColor(
+                                            level!.foreground, 1.0, 60)),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        constraints: BoxConstraints(maxWidth: 210),
+                        margin: const EdgeInsets.only(top: 0, bottom: 40),
+                        width: double.infinity,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          color: level?.background,
+                          shape: BoxShape.rectangle,
+                          border: Border.all(
+                              color: darkenColor(level!.foreground, 1.0, 60),
+                              width: 2),
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.only(left: 20, right: 20),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/3874760171579070430.svg',
+                                semanticsLabel: 'Logo',
+                                width: 50,
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    level!.targetQuestions.toString() + "/10",
+                                    style: new TextStyle(
+                                        fontFamily: "Mansalva",
+                                        fontSize: 35,
+                                        color: darkenColor(
+                                            level!.foreground, 1.0, 60)),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
@@ -162,6 +193,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                         MaterialPageRoute(
                             builder: (context) => Question(
                                   level: level,
+                                  levelIndex: levelIndex,
                                 )),
                       );
                     },
@@ -171,7 +203,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                       width: double.infinity,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(92, 188, 194, 1),
+                        color: darkenColor(level!.background, 1.0, 30),
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),

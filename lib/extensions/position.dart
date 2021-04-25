@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 extension containerPosition on GlobalKey {
   List get widgetCoordinates {
-
     final renderObject = currentContext?.findRenderObject();
     var translation = renderObject?.getTransformTo(null).getTranslation();
 
@@ -11,6 +10,5 @@ extension containerPosition on GlobalKey {
     } else {
       return [];
     }
-
   }
 }

@@ -32,6 +32,7 @@ dependencies:
   flutter_svg: ^0.22.0
   dotted_decoration: ^2.0.0
   vibration: ^1.7.4-nullsafety.0
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,17 @@ flutter:
   assets:
     - assets/logo.png
     - assets/tree-2750366.svg
+    - assets/time-2020934.svg
+    - assets/bird-616803.svg
+    - assets/appName.svg
+    - assets/5055648501582884280.svg
+    - assets/achievement-1294003.svg
+    - assets/divide-40654.svg
+    - assets/calculator-32229.svg
+    - assets/trophy.svg
+    - assets/9031120521537856843.svg
+    - assets/3874760171579070430.svg
+    - assets/15238257771553771426.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
