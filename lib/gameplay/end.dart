@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //Components
 import '../levels.dart';
 import '../extensions/darkenColor.dart';
+import '../extensions/colorFilter.dart';
 
 class LevelEnd extends StatefulWidget {
   final int correctAnswers;
@@ -79,8 +80,16 @@ class _LevelEndState extends State<LevelEnd> {
             child: Container(
               width: double.infinity,
               margin: const EdgeInsets.only(top: 50, bottom: 20),
-              child:
-                  SvgPicture.asset('assets/trophy.svg', semanticsLabel: 'Logo'),
+              child: ColorFiltered(
+                colorFilter: correctAnswers >= level.targetQuestions
+                    ? ColorFilter.mode(
+                        Colors.transparent,
+                        BlendMode.multiply,
+                      )
+                    : colorFilter,
+                child: SvgPicture.asset('assets/trophy.svg',
+                    width: 56, semanticsLabel: 'Trophie'),
+              ),
             ),
           ),
           Expanded(
@@ -114,13 +123,28 @@ class _LevelEndState extends State<LevelEnd> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.asset('assets/' + level.trophy,
-                      width: 90, semanticsLabel: 'Logo'),
                   Container(
-                    margin: const EdgeInsets.only(top: 20),
-                    child: Text("Learner's Trophy",
+                    margin: const EdgeInsets.only(top: 6),
+                    child: ColorFiltered(
+                        colorFilter: correctAnswers >= level.targetQuestions
+                            ? ColorFilter.mode(
+                                Colors.transparent,
+                                BlendMode.multiply,
+                              )
+                            : colorFilter,
+                        child: SvgPicture.asset('assets/' + level.trophy,
+                            width: 90, semanticsLabel: 'Logo')),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Text(
+                        correctAnswers >= level.targetQuestions
+                            ? level.trophyName
+                            : level.targetQuestions.toString() +
+                                "/10" +
+                                " for a trophy",
                         style: new TextStyle(
-                            fontSize: 30, fontFamily: 'IndieFlower')),
+                            fontSize: 34, fontFamily: 'IndieFlower')),
                   )
                 ],
               ),
@@ -142,9 +166,13 @@ class _LevelEndState extends State<LevelEnd> {
                 ),
                 margin: const EdgeInsets.all(20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/15238257771553771426.svg',
-                        semanticsLabel: 'Logo'),
+                    SvgPicture.asset(
+                      'assets/15238257771553771426.svg',
+                      semanticsLabel: 'Logo',
+                      width: 70,
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: 30, right: 30),
                       child: Center(
@@ -167,7 +195,7 @@ class _LevelEndState extends State<LevelEnd> {
               child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).popUntil((route) {
-                      return route.settings.name == 'HomePage';
+                      return route.settings.name == 'LevelScreen';
                     });
                   },
                   child: Container(

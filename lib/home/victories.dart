@@ -1,9 +1,11 @@
 //Packages
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 //Components
 import '../levels.dart';
+import '../extensions/colorFilter.dart';
 
 class Victories extends StatefulWidget {
   Victories({Key? key}) : super(key: key);
@@ -13,6 +15,21 @@ class Victories extends StatefulWidget {
 }
 
 class _VictoriesState extends State<Victories> {
+  List<String>? levelState;
+
+  @override
+  void initState() {
+    getProgress();
+    super.initState();
+  }
+
+  void getProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      levelState = prefs.getStringList('levels');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,15 +42,26 @@ class _VictoriesState extends State<Victories> {
                 margin: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    Image.asset('assets/logo.png', scale: 1.3),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                          size: 40,
+                        ),
+                      ),
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: 10),
-                      child: Text("Victories",
+                      child: Text("Progress",
                           style: new TextStyle(
                               fontFamily: 'IndieFlower', fontSize: 35)),
                     ),
                     Expanded(child: Container()),
-                    Icon(Icons.emoji_events_outlined, size: 40)
                   ],
                 ),
               ),
@@ -42,26 +70,42 @@ class _VictoriesState extends State<Victories> {
                 child: Expanded(
                   flex: 1,
                   child: ListView.builder(
+                    padding: const EdgeInsets.only(left: 20),
                     scrollDirection: Axis.horizontal,
                     itemCount: levels.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return AspectRatio(
-                        aspectRatio: 1,
-                        child: new Container(
-                          margin: const EdgeInsets.all(10),
-                          decoration: new BoxDecoration(
-                            color: levels[index].background,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                      if (index == levels.length - 1) {
+                        return Container();
+                      } else {
+                        return AspectRatio(
+                          aspectRatio: 1,
+                          child: new Container(
+                            margin: const EdgeInsets.all(10),
+                            decoration: new BoxDecoration(
+                              color: levelState?[index + 1] != "false"
+                                  ? levels[index].background
+                                  : Colors.grey.shade400,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                            ),
+                            child: Container(
+                              margin: const EdgeInsets.all(20),
+                              child: ColorFiltered(
+                                colorFilter: levelState?[index + 1] != "false"
+                                    ? ColorFilter.mode(
+                                        Colors.transparent,
+                                        BlendMode.multiply,
+                                      )
+                                    : colorFilter,
+                                child: SvgPicture.asset(
+                                    'assets/' + levels[index].trophy,
+                                    width: 56,
+                                    semanticsLabel: 'Logo'),
+                              ),
+                            ),
                           ),
-                          child: Container(
-                            margin: const EdgeInsets.all(20),
-                            child: SvgPicture.asset(
-                                'assets/' + levels[index].trophy,
-                                width: 56,
-                                semanticsLabel: 'Logo'),
-                          ),
-                        ),
-                      );
+                        );
+                      }
                     },
                   ),
                 ),

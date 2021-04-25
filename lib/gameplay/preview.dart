@@ -62,7 +62,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                     margin: const EdgeInsets.only(right: 80),
                     child: Center(
                       child: Text(
-                        "Level 1",
+                        "Level " + levelIndex.toString(),
                         style: new TextStyle(
                             fontFamily: 'Mansalva',
                             fontSize: 60,
@@ -192,6 +192,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => Question(
+                                  tutorial: false,
                                   level: level,
                                   levelIndex: levelIndex,
                                 )),
