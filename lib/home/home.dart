@@ -67,6 +67,7 @@ class _LevelsState extends State<Levels> {
   GlobalKey learnerTrophy = GlobalKey();
   List<double> learnerPositions = [0.0, 0.0];
   int currentTutorial = 0;
+  bool? volume;
 
   bool activeSnackbar = false;
 
@@ -81,15 +82,26 @@ class _LevelsState extends State<Levels> {
 
   @override
   void initState() {
+    setState(() {
+      volume = false;
+      updateProgress();
+    });
+    
     WidgetsBinding.instance!.addPostFrameCallback((_) => _obtainPosition());
-    updateProgress();
     super.initState();
+  }
+
+  void updateVolume(bool decision) async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("volume", decision);
+      volume = decision;
   }
 
   void updateProgress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       unlockState = prefs.getStringList('levels') ?? [""];
+      volume = prefs.getBool("volume");
     });
   }
 
@@ -140,6 +152,18 @@ class _LevelsState extends State<Levels> {
                           ),
                           Expanded(child: Container()),
                           Container(
+                            margin: const EdgeInsets.only(right: 20),
+                            child: GestureDetector(
+                                onTap: () {
+                                  //Mute audio completely
+                                  setState(() {
+                                    updateVolume(!volume!);
+                                  });
+                                },
+                                child: Icon(volume!? Icons.volume_up_rounded: Icons.volume_off_rounded,
+                                    size: 40)),
+                          ),
+                          Container(
                             margin: const EdgeInsets.only(right: 2),
                             child: GestureDetector(
                                 onTap: () {
@@ -155,7 +179,7 @@ class _LevelsState extends State<Levels> {
                                 },
                                 child: Icon(Icons.emoji_events_outlined,
                                     size: tutorial! ? 55 : 40)),
-                          )
+                          ),
                         ],
                       ),
                     ),

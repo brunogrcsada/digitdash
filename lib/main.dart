@@ -45,6 +45,7 @@ class _StartPageState extends State<StartPage> {
             prefs.setStringList('levels', ["true", "false", "false", "false"]);
             prefs.setStringList('scores', ["0", "0", "0", "0"]);
             prefs.setStringList('stars', ["0", "0", "0", "0"]);
+            prefs.setBool("volume", true);
           }
 
         

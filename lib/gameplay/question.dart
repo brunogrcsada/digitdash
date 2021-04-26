@@ -5,6 +5,8 @@ import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:vibration/vibration.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../extensions/darkenColor.dart';
 import 'end.dart';
@@ -38,6 +40,7 @@ class _QuestionState extends State<Question> {
   final int levelIndex;
   bool tutorial;
   AudioCache? _audioCache;
+  bool? volume;
 
   GlobalKey numberKey = GlobalKey();
   List<double> numberPositions = [0.0, 0.0];
@@ -67,10 +70,12 @@ class _QuestionState extends State<Question> {
   int correctAnswers = 0;
   int answer = 0;
   int score = 0;
+  AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY)
+    ..setReleaseMode(ReleaseMode.STOP);
 
   bool activeSnackbar = false;
 
-  void resetGame(){
+  void resetGame() {
     setState(() {
       userResponse = "";
       question = "";
@@ -83,10 +88,9 @@ class _QuestionState extends State<Question> {
       if (level!.time != 0) {
         startTimer();
       }
-      _audioCache = AudioCache(
-          prefix: "assets/",
-          fixedPlayer: AudioPlayer(mode: PlayerMode.LOW_LATENCY)
-            ..setReleaseMode(ReleaseMode.STOP));
+      updateProgress();
+
+      _audioCache = AudioCache(prefix: "assets/", fixedPlayer: audioPlayer);
     });
   }
 
@@ -157,16 +161,18 @@ class _QuestionState extends State<Question> {
   }
 
   void initState() {
+    setState(() {
+      volume = false;
+      updateProgress();
+    });
+
     WidgetsBinding.instance!.addPostFrameCallback((_) => _obtainPosition());
     super.initState();
     createAnswer();
     if (level!.time != 0) {
       startTimer();
     }
-    _audioCache = AudioCache(
-        prefix: "assets/",
-        fixedPlayer: AudioPlayer(mode: PlayerMode.LOW_LATENCY)
-          ..setReleaseMode(ReleaseMode.STOP));
+    _audioCache = AudioCache(prefix: "assets/", fixedPlayer: audioPlayer);
   }
 
   void _obtainPosition() {
@@ -175,6 +181,19 @@ class _QuestionState extends State<Question> {
         numberKey.widgetCoordinates[0],
         numberKey.widgetCoordinates[1]
       ];
+    });
+  }
+
+  void updateVolume(bool decision) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("volume", decision);
+    volume = decision;
+  }
+
+  void updateProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      volume = prefs.getBool("volume");
     });
   }
 
@@ -217,6 +236,155 @@ class _QuestionState extends State<Question> {
   void dispose() {
     gameTimer!.cancel();
     super.dispose();
+  }
+
+  createAlertDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Material(
+            type: MaterialType.transparency,
+            child: Center(
+              child: Container(
+                  constraints: BoxConstraints(maxHeight: 350),
+                  decoration: BoxDecoration(
+                      color: darkenColor(level!.background, 1.0, 40),
+                      borderRadius: BorderRadius.circular(20.0)),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 25),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).popUntil((route) {
+                                return route.settings.name == 'HomePage';
+                              });
+                            },
+                            child: Container(
+                              constraints: BoxConstraints(maxWidth: 300),
+                              decoration: BoxDecoration(
+                                color: darkenColor(level!.background, 1.0, 24),
+                                shape: BoxShape.rectangle,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                              ),
+                              margin: const EdgeInsets.only(
+                                  left: 20, right: 20, bottom: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/15238257771553771426.svg',
+                                    semanticsLabel: 'Logo',
+                                    width: 70,
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                      left: 20,
+                                      right: 20,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Levels",
+                                        style: new TextStyle(
+                                            fontSize: 50,
+                                            fontFamily: "IndieFlower",
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                updateVolume(!volume!);
+
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            child: Container(
+                              constraints: BoxConstraints(maxWidth: 300),
+                              decoration: BoxDecoration(
+                                color: darkenColor(level!.background, 1.0, 24),
+                                shape: BoxShape.rectangle,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                              ),
+                              margin: const EdgeInsets.only(
+                                  left: 20, right: 20, bottom: 20),
+                              padding: const EdgeInsets.only(right: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: Icon(
+                                      volume!
+                                          ? Icons.volume_off_rounded
+                                          : Icons.volume_up_rounded,
+                                      color: Colors.white,
+                                      size: 60,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 20,
+                                  ),
+                                  Container(
+                                    child: Center(
+                                      child: Text(
+                                        volume! ? "Mute" : "Unmute",
+                                        style: new TextStyle(
+                                            fontSize: 46,
+                                            fontFamily: "IndieFlower",
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  resetGame();
+
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    shape: BoxShape.rectangle,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                  ),
+                                  child: Container(
+                                    margin: const EdgeInsets.all(3),
+                                    child: Text(
+                                      "Retry!",
+                                      style: new TextStyle(
+                                          fontSize: 40,
+                                          fontFamily: "IndieFlower",
+                                          color: darkenColor(
+                                              level!.foreground, 1.0, 40)),
+                                    ),
+                                  ))),
+                        )
+                      ],
+                    ),
+                  )),
+            ),
+          );
+        });
   }
 
   @override
@@ -275,15 +443,41 @@ class _QuestionState extends State<Question> {
                                       margin: const EdgeInsets.only(left: 25),
                                       child: Column(
                                         children: [
-                                          Text(
-                                            "Score: " + score.toString(),
-                                            style: new TextStyle(
-                                                fontFamily: 'Mansalva',
-                                                fontSize: 30,
-                                                color: darkenColor(
-                                                    level!.foreground,
-                                                    1.0,
-                                                    30)),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 10),
+                                                child: Text(
+                                                  "Score: " + score.toString(),
+                                                  style: new TextStyle(
+                                                      fontFamily: 'Mansalva',
+                                                      fontSize: 30,
+                                                      color: darkenColor(
+                                                          level!.foreground,
+                                                          1.0,
+                                                          30)),
+                                                ),
+                                              ),
+                                              Expanded(child: Container()),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  createAlertDialog(context);
+                                                },
+                                                child: Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 2, right: 10),
+                                                  child: Icon(
+                                                    Icons.settings,
+                                                    color: darkenColor(
+                                                        level!.foreground,
+                                                        1.0,
+                                                        30),
+                                                    size: 35,
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
                                           Expanded(
                                             child: LayoutBuilder(builder:
@@ -386,6 +580,7 @@ class _QuestionState extends State<Question> {
                       Expanded(
                         child: Center(
                           child: Container(
+                            margin: const EdgeInsets.only(top: 14),
                             child: Text(
                               question,
                               style: new TextStyle(
@@ -473,9 +668,13 @@ class _QuestionState extends State<Question> {
                                                   answer) {
                                                 print("Correct");
 
-                                                _audioCache!.play(correctAudio[
-                                                    Random().nextInt(
-                                                        correctAudio.length)]);
+                                                _audioCache!.play(
+                                                    correctAudio[Random()
+                                                        .nextInt(correctAudio
+                                                            .length)],
+                                                    volume:
+                                                        volume! ? 1.0 : 0.0);
+
                                                 score += level!.maxScore ~/ 10;
                                                 correctAnswers++;
                                               } else {
@@ -483,7 +682,9 @@ class _QuestionState extends State<Question> {
                                                 _audioCache!.play(
                                                     incorrectAudio[Random()
                                                         .nextInt(incorrectAudio
-                                                            .length)]);
+                                                            .length)],
+                                                    volume:
+                                                        volume! ? 1.0 : 0.0);
                                                 print("Incorrect");
                                               }
 
@@ -507,8 +708,9 @@ class _QuestionState extends State<Question> {
                                                                 levelIndex,
                                                           )),
                                                 ).then((value) {
-                                                    resetGame();
-                                                  });;
+                                                  resetGame();
+                                                });
+                                                ;
                                               } else {
                                                 userResponse = "";
                                                 questionNumber++;
@@ -535,18 +737,22 @@ class _QuestionState extends State<Question> {
 
                                           setState(() {
                                             if (userResponse.length == 3) {
-                                              if(activeSnackbar == false){
-                                                  activeSnackbar = true;
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                        duration: const Duration(seconds: 1),
-                                                          content: Text(
-                                                              "The answer can't have more than 3 numbers!" 
-                                                                  ))).closed.then((value) {
-                                                                      setState(() {
-                                                                        activeSnackbar = false;
-                                                                      });});
-                                                                      }
+                                              if (activeSnackbar == false) {
+                                                activeSnackbar = true;
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                        duration:
+                                                            const Duration(
+                                                                seconds: 1),
+                                                        content: Text(
+                                                            "The answer can't have more than 3 numbers!")))
+                                                    .closed
+                                                    .then((value) {
+                                                  setState(() {
+                                                    activeSnackbar = false;
+                                                  });
+                                                });
+                                              }
                                             } else {
                                               if (index == 10) {
                                                 userResponse =
