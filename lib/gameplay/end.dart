@@ -71,9 +71,21 @@ class _LevelEndState extends State<LevelEnd> {
         ((level.questionNumber - level.targetQuestions) *
             (level.maxScore / 10));
 
-    var starScore = score ~/ (targetScore ~/ 3);
+    var starScore;
 
-    stars![levelIndex] = starScore.toString();
+    if(score <= targetScore / 3){
+        starScore = 1;
+    } else if(score <= ((targetScore / 3) * 2)){
+        starScore = 2;
+    } else if (score <= ((targetScore / 3) * 3)){
+        starScore = 3;
+    } else {
+      starScore = 3;
+    }
+
+    if (starScore > (int.parse(stars![levelIndex]))) {
+      stars![levelIndex] = starScore.toString();
+    }
 
     prefs.setStringList('stars', stars!);
   }
@@ -153,7 +165,7 @@ class _LevelEndState extends State<LevelEnd> {
                                 )
                               : colorFilter,
                           child: SvgPicture.asset('assets/' + level.trophy,
-                              width: 90, semanticsLabel: 'Logo')),
+                              width:levelIndex == 2? 68 : 90, semanticsLabel: 'Logo')),
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 10),
@@ -215,7 +227,7 @@ class _LevelEndState extends State<LevelEnd> {
                 child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).popUntil((route) {
-                        return route.settings.name == 'LevelScreen';
+                        return route.settings.name == 'Gameplay';
                       });
                     },
                     child: Container(

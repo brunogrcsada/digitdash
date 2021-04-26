@@ -68,6 +68,8 @@ class _LevelsState extends State<Levels> {
   List<double> learnerPositions = [0.0, 0.0];
   int currentTutorial = 0;
 
+  bool activeSnackbar = false;
+
   _LevelsState({this.tutorial, required this.unlockState});
 
   List<String> tutorials = [
@@ -170,9 +172,7 @@ class _LevelsState extends State<Levels> {
                                       levelPosition: levelPositions[index],
                                       nextPosition: levelPositions[index + 1],
                                       valueSet: false,
-                                      unlockStatus: index == levels.length
-                                          ? "last"
-                                          : unlockState[index + 1],
+                                      unlockStatus: unlockState[index + 1],
                                       startOffset: [
                                         Offset(0, 0),
                                         Offset(0, 0)
@@ -198,12 +198,23 @@ class _LevelsState extends State<Levels> {
                                   child: GestureDetector(
                                     onTap: () {
                                       if (unlockState[index] == "false") {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    'Oopsies! Unlock level ' +
-                                                        (index).toString() +
-                                                        ' first!')));
+                                        if (activeSnackbar == false) {
+                                          activeSnackbar = true;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  duration: const Duration(
+                                                      seconds: 1),
+                                                  content: Text(
+                                                      'Oopsies! Unlock level ' +
+                                                          (index).toString() +
+                                                          ' first!')))
+                                              .closed
+                                              .then((value) {
+                                            setState(() {
+                                              activeSnackbar = false;
+                                            });
+                                          });
+                                        }
                                       } else {
                                         Navigator.of(context)
                                             .push(ScaleRoute(
@@ -391,8 +402,11 @@ class _LevelsState extends State<Levels> {
                                     tutorial: true,
                                     level: levels[0],
                                     levelIndex: 0,
-                                  )),
-                        );
+                                  ),
+                              settings: RouteSettings(name: 'Gameplay')),
+                        ).then((value) {
+                          updateProgress();
+                        });
                       } else {
                         setState(() {
                           currentTutorial++;

@@ -68,6 +68,28 @@ class _QuestionState extends State<Question> {
   int answer = 0;
   int score = 0;
 
+  bool activeSnackbar = false;
+
+  void resetGame(){
+    setState(() {
+      userResponse = "";
+      question = "";
+      questionNumber = 1;
+      correctAnswers = 0;
+      answer = 0;
+      score = 0;
+
+      createAnswer();
+      if (level!.time != 0) {
+        startTimer();
+      }
+      _audioCache = AudioCache(
+          prefix: "assets/",
+          fixedPlayer: AudioPlayer(mode: PlayerMode.LOW_LATENCY)
+            ..setReleaseMode(ReleaseMode.STOP));
+    });
+  }
+
   void createAnswer() {
     Random random = new Random();
 
@@ -111,9 +133,11 @@ class _QuestionState extends State<Question> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget okButton = FlatButton(
+    Widget okButton = TextButton(
       child: Text("OK"),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
     );
 
     AlertDialog alert = AlertDialog(
@@ -175,7 +199,7 @@ class _QuestionState extends State<Question> {
             _audioCache!.play('timesup.mp3');
             startTimer();
           });
-        } else if (time == 20) {
+        } else if (time == level!.time) {
           setState(() {
             timerStarted = true;
             time = time! - 1;
@@ -482,7 +506,9 @@ class _QuestionState extends State<Question> {
                                                             levelIndex:
                                                                 levelIndex,
                                                           )),
-                                                );
+                                                ).then((value) {
+                                                    resetGame();
+                                                  });;
                                               } else {
                                                 userResponse = "";
                                                 questionNumber++;
@@ -508,11 +534,27 @@ class _QuestionState extends State<Question> {
                                           }
 
                                           setState(() {
-                                            if (index == 10) {
-                                              userResponse = userResponse + "0";
+                                            if (userResponse.length == 3) {
+                                              if(activeSnackbar == false){
+                                                  activeSnackbar = true;
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                        duration: const Duration(seconds: 1),
+                                                          content: Text(
+                                                              "The answer can't have more than 3 numbers!" 
+                                                                  ))).closed.then((value) {
+                                                                      setState(() {
+                                                                        activeSnackbar = false;
+                                                                      });});
+                                                                      }
                                             } else {
-                                              userResponse = userResponse +
-                                                  (index + 1).toString();
+                                              if (index == 10) {
+                                                userResponse =
+                                                    userResponse + "0";
+                                              } else {
+                                                userResponse = userResponse +
+                                                    (index + 1).toString();
+                                              }
                                             }
                                           });
                                         }
@@ -529,9 +571,11 @@ class _QuestionState extends State<Question> {
                                           Vibration.vibrate();
                                         }
 
-                                        setState(() {
-                                          userResponse = "";
-                                        });
+                                        if (index == 9) {
+                                          setState(() {
+                                            userResponse = "";
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(

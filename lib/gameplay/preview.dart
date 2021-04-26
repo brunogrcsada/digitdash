@@ -194,7 +194,8 @@ class _LevelPreviewState extends State<LevelPreview> {
                                   tutorial: false,
                                   level: level,
                                   levelIndex: levelIndex,
-                                )),
+                                ), 
+                                settings: RouteSettings(name: 'Gameplay')),
                       );
                     },
                     child: Container(

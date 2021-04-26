@@ -40,11 +40,16 @@ class _StartPageState extends State<StartPage> {
 
     unlockState = prefs.getStringList('levels') ?? [""];
 
-    if (unlockState![0] == "") {
-      prefs.setStringList('levels', ["true", "false", "false", "false"]);
-      prefs.setStringList('scores', ["0", "0", "0", "0"]);
-      prefs.setStringList('stars', ["0", "0", "0", "0"]);
-    }
+    setState(() {
+        if (unlockState![0] == "") {
+            prefs.setStringList('levels', ["true", "false", "false", "false"]);
+            prefs.setStringList('scores', ["0", "0", "0", "0"]);
+            prefs.setStringList('stars', ["0", "0", "0", "0"]);
+          }
+
+        
+        unlockState = ["true", "false", "false", "false"];
+    });
   }
 
   @override

@@ -190,9 +190,10 @@ class _VictoriesState extends State<Victories> {
                                   margin: const EdgeInsets.only(right: 21),
                                   child: Row(
                                     children: List.generate(3, (starIndex) {
-                                      if (index + 1 <=
+                                      if (starIndex + 1 <=
                                           int.parse(
                                               starState![index].toString())) {
+
                                         return DecoratedIcon(
                                           Icons.star_rounded,
                                           color: Color.fromRGBO(255, 212, 1, 1),
