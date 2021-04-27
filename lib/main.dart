@@ -132,7 +132,7 @@ class _StartPageState extends State<StartPage> {
                           child: Text("Tutorial?",
                               style: new TextStyle(
                                   fontFamily: 'IndieFlower',
-                                  fontSize: 35,
+                                  fontSize: 32,
                                   color: Colors.white)),
                         ),
                         Expanded(

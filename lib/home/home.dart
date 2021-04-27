@@ -399,9 +399,9 @@ class _LevelsState extends State<Levels> {
             if (tutorial!)
               Positioned(
                   top: currentTutorial == 0
-                      ? levelPositions[0][1] + 230
+                      ? levelPositions[0][1] + 250
                       : currentTutorial == 1
-                          ? learnerPositions[1] + 230
+                          ? learnerPositions[1] + 250
                           : currentTutorial == 2
                               ? 170
                               : 10,
@@ -445,7 +445,7 @@ class _LevelsState extends State<Levels> {
                           borderRadius: BorderRadius.all(Radius.circular(20))),
                       child: Center(
                           child: Text(
-                        "✔",
+                        "✓",
                         style: new TextStyle(color: Colors.white, fontSize: 30),
                       )),
                     ),
