@@ -109,7 +109,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                           color: level?.background,
                           shape: BoxShape.rectangle,
                           border: Border.all(
-                              color: darkenColor(level!.foreground, 1.0, 60),
+                              color: darkenColor(level!.foreground, 1.0, 20),
                               width: 2),
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
@@ -149,7 +149,7 @@ class _LevelPreviewState extends State<LevelPreview> {
                           color: level?.background,
                           shape: BoxShape.rectangle,
                           border: Border.all(
-                              color: darkenColor(level!.foreground, 1.0, 60),
+                              color: darkenColor(level!.foreground, 1.0, 20),
                               width: 2),
                           borderRadius: BorderRadius.all(Radius.circular(30)),
                         ),
@@ -200,11 +200,12 @@ class _LevelPreviewState extends State<LevelPreview> {
                     },
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 80),
+                      padding: const EdgeInsets.only(bottom: 4),
                       constraints: BoxConstraints(maxWidth: 230),
                       width: double.infinity,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: darkenColor(level!.background, 1.0, 30),
+                        color: darkenColor(level!.background, 1.0, 25),
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),
@@ -214,6 +215,8 @@ class _LevelPreviewState extends State<LevelPreview> {
                           children: [
                             Icon(
                               Icons.gamepad,
+
+                              color: darkenColor(level!.background, 1.0, 100),
                               size: 40,
                             ),
                             Expanded(

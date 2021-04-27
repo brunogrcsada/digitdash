@@ -55,32 +55,28 @@ flutter:
   assets:
     - assets/logo.png
     - assets/tree-2750366.svg
-    - assets/time-2020934.svg
-    - assets/bird-616803.svg
     - assets/appName.svg
-    - assets/5055648501582884280.svg
     - assets/achievement-1294003.svg
     - assets/divide-40654.svg
     - assets/calculator-32229.svg
+    - assets/time-2020934.svg
+
     - assets/trophy.svg
     - assets/9031120521537856843.svg
     - assets/3874760171579070430.svg
     - assets/15238257771553771426.svg
+    - assets/bird-616803.png
+
     - assets/brilliant.mp3
-    - assets/firstclass.mp3
     - assets/genius.mp3
     - assets/impressive.mp3
     - assets/incorrect.mp3
-    - assets/notright.mp3
     - assets/splendid.mp3
     - assets/thatswrong.mp3
     - assets/timesup.mp3
-    - assets/tryagain.mp3
     - assets/uhoh.mp3
-    - assets/unlocked.mp3
     - assets/welldone.mp3
     - assets/oopsies.mp3
-    - assets/bird-616803.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

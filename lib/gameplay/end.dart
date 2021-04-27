@@ -81,7 +81,7 @@ class _LevelEndState extends State<LevelEnd> {
         starScore = 0;
       } else if (score <= ((targetScore / 3) * 2)) {
         starScore = 1;
-      } else if (score <= ((targetScore / 3) * 3)) {
+      } else if (score < ((targetScore / 3) * 3)) {
         starScore = 2;
       } else {
         starScore = 3;

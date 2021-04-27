@@ -106,11 +106,10 @@ class _QuestionState extends State<Question> {
     int secondNumber = 1 + random.nextInt(12 - 1);
 
     if (questionOperator == 2) {
-      print(firstNumber);
       if (firstNumber == 1) {
         secondNumber = 1;
       } else {
-        secondNumber = 1 + random.nextInt(firstNumber - 1);
+        secondNumber = 1 + random.nextInt(firstNumber);
       }
     } else if (questionOperator == 1) {
       var numberList = [];
@@ -366,6 +365,12 @@ class _QuestionState extends State<Question> {
                           child: GestureDetector(
                               onTap: () {
                                 setState(() {
+                                  if (level!.time != 0) {
+                                      gameTimer!.cancel();
+                                  }
+
+                                  timerStarted = false;
+
                                   resetGame();
 
                                   Navigator.of(context).pop();

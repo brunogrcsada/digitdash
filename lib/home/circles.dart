@@ -19,6 +19,13 @@ class LevelCircle extends StatelessWidget{
         decoration: new BoxDecoration(
           color: background,
           shape: BoxShape.circle,
+          boxShadow: [
+              BoxShadow(
+                    spreadRadius: 3,
+                    color: background!,
+                    blurRadius: 10,
+                    )
+              ],
         ),
         child: Center(
           child: Text(
