@@ -42,8 +42,12 @@ class _QuestionState extends State<Question> {
   AudioCache? _audioCache;
   bool? volume;
 
+  String? previousCorrectAudio = "";
+  String? previousIncorrectAudio = "";
+
   GlobalKey numberKey = GlobalKey();
   List<double> numberPositions = [0.0, 0.0];
+  List<String> levelQuestions = [];
 
   _QuestionState(
       {this.level, required this.levelIndex, required this.tutorial});
@@ -134,6 +138,13 @@ class _QuestionState extends State<Question> {
       answer = firstNumber + secondNumber;
       question = firstNumber.toString() + " + " + secondNumber.toString();
     }
+
+    if(levelQuestions.contains(question)){
+        createAnswer();
+    } else{
+        levelQuestions.add(question);
+    }
+
   }
 
   showAlertDialog(BuildContext context) {
@@ -660,18 +671,31 @@ class _QuestionState extends State<Question> {
                                                 .replaceAll(RegExp(r'.$'), "");
                                           });
                                         } else if (index == 11) {
+
+                                          List correctAudioList = correctAudio.toList();
+                                          List incorrectAudioList = incorrectAudio.toList();
+
+                                          correctAudioList.remove(previousCorrectAudio);
+                                          incorrectAudioList.remove(previousIncorrectAudio);
+
                                           setState(() {
                                             if (userResponse.isEmpty) {
                                               showAlertDialog(context);
                                             } else {
                                               if (int.parse(userResponse) ==
                                                   answer) {
-                                                print("Correct");
+
+                                                
+                                                correctAudioList.remove(previousIncorrectAudio);
+
+                                                var audio = correctAudioList[Random()
+                                                        .nextInt(correctAudioList
+                                                            .length)];
+                                                
+                                                previousCorrectAudio = audio;
 
                                                 _audioCache!.play(
-                                                    correctAudio[Random()
-                                                        .nextInt(correctAudio
-                                                            .length)],
+                                                    audio,
                                                     volume:
                                                         volume! ? 1.0 : 0.0);
 
@@ -679,13 +703,20 @@ class _QuestionState extends State<Question> {
                                                 correctAnswers++;
                                               } else {
                                                 score -= level!.maxScore ~/ 10;
+
+                                                 incorrectAudioList.remove(previousIncorrectAudio);
+
+                                                 var audio = incorrectAudioList[Random()
+                                                        .nextInt(incorrectAudioList
+                                                            .length)];
+                                                  
+                                                  previousIncorrectAudio = audio;
+
                                                 _audioCache!.play(
-                                                    incorrectAudio[Random()
-                                                        .nextInt(incorrectAudio
-                                                            .length)],
+                                                    audio,
                                                     volume:
                                                         volume! ? 1.0 : 0.0);
-                                                print("Incorrect");
+
                                               }
 
                                               if (questionNumber == 10) {

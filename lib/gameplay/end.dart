@@ -78,11 +78,11 @@ class _LevelEndState extends State<LevelEnd> {
 
     setState(() {
       if (score <= targetScore / 3) {
-        starScore = 1;
+        starScore = 0;
       } else if (score <= ((targetScore / 3) * 2)) {
-        starScore = 2;
+        starScore = 1;
       } else if (score <= ((targetScore / 3) * 3)) {
-        starScore = 3;
+        starScore = 2;
       } else {
         starScore = 3;
       }
@@ -100,7 +100,7 @@ class _LevelEndState extends State<LevelEnd> {
      var levels = prefs.getStringList('levels');
 
      setState(() {
-        if (levels![levelIndex] == "true"){
+        if (levels![levelIndex+1] == "true"){
             alreadyUnlocked = true;
         } else{
             alreadyUnlocked = false;
@@ -111,10 +111,10 @@ class _LevelEndState extends State<LevelEnd> {
 
   @override
   void initState() {
+    checkProgress();
     if (correctAnswers >= level.targetQuestions) {
       unlockLevel();
     }
-    checkProgress();
     calculateStars();
     super.initState();
   }
@@ -220,7 +220,7 @@ class _LevelEndState extends State<LevelEnd> {
                         Container(
                           margin: const EdgeInsets.only(top: 6),
                           child: ColorFiltered(
-                              colorFilter: alreadyUnlocked!? ColorFilter.mode(
+                              colorFilter: alreadyUnlocked !? ColorFilter.mode(
                                       Colors.transparent,
                                       BlendMode.multiply,
                                     ) : correctAnswers >= level.targetQuestions
